@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Businesses on Map</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXg93GWII8iO6RunpZ35bJ6JqMXAxayiE&callback=initMap" async defer></script>
-</head>
+    </head>
 
 <body>
     <div class="form-group m-form__group">

@@ -33,8 +33,7 @@
   <title>Business Management</title>
   <!-- Bootstrap CSS -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXg93GWII8iO6RunpZ35bJ6JqMXAxayiE&libraries=places"></script>
-</head>
+  </head>
 
 <body>
     @if(isset($data['results']->id))
