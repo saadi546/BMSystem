@@ -29,6 +29,8 @@ class StoreBusiness extends FormRequest
             'email'=>'string',
             'website_url'=>'string',
             'address'=>'string',
+            'latitude'=>'string',
+            'longitude'=>'string',
             'operating_hours'=>'string',
             'employee_details'=>'string',
         ];

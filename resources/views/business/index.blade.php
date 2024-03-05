@@ -15,6 +15,9 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{{ route('roles.index') }}">Roles Management</a>
               </li>
+              <li>
+                <a class="nav-link active" aria-current="page" href="{{ route('roles.map') }}">All Businesses Map</a>
+              </li>
               @endif
               @endauth
             </ul>

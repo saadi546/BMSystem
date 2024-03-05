@@ -28,6 +28,10 @@ return new class extends Migration
 
             $table->text('address');
 
+            $table->text('latitude');
+
+            $table->text('longitude');
+
             $table->string('operating_hours')->nullable();
 
             $table->string('employee_detail')->nullable();

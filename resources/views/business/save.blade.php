@@ -15,6 +15,9 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{{ route('roles.index') }}">Roles Management</a>
               </li>
+              <li>
+                <a class="nav-link active" aria-current="page" href="{{ route('roles.map') }}">All Businesses Map</a>
+              </li>
               @endif
               @endauth
             </ul>
@@ -30,6 +33,7 @@
   <title>Business Management</title>
   <!-- Bootstrap CSS -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXg93GWII8iO6RunpZ35bJ6JqMXAxayiE&libraries=places"></script>
 </head>
 
 <body>
@@ -79,7 +83,7 @@
                     <div class="col-md-3">
                         <div class="form-group m-form__group">
                             <label>Description</label>
-                            <textarea name="address" class="form-control m-input m-input--square" rows="4" >{{ (isset($data['results']->address) ? $data['results']->address : '') }}</textarea>
+                            <textarea name="description" class="form-control m-input m-input--square" rows="4" >{{ (isset($data['results']->description) ? $data['results']->description : '') }}</textarea>
                         </div>
                     </div>
                     
@@ -114,12 +118,30 @@
                         </div>
                     </div>
 
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <div class="form-group m-form__group">
                             <label>Address</label>
-                            <textarea name="description" class="form-control m-input m-input--square" rows="4" >{{ (isset($data['results']->description) ? $data['results']->description : '') }}</textarea>
+                            <textarea name="address" class="form-control m-input m-input--square" rows="4" >{{ (isset($data['results']->address) ? $data['results']->address : '') }}</textarea>
+                        </div>
+                    </div> --}}
+
+                    <div class="col-md-3">
+                        <div class="form-group m-form__group">
+                            <label for="address">Enter Address:</label>
+                            <input type="text" id="address" name="address" placeholder="Enter your address" class="form-control m-input m-input--square" value="{{ (isset($data['results']->address) ? $data['results']->address : '') }}">
+                            <input type="hidden" id="latitude" name="latitude" class="form-control m-input m-input--square" value="{{ (isset($data['results']->latitude) ? $data['results']->latitude : '') }}">
+                            <input type="hidden" id="longitude" name="longitude" class="form-control m-input m-input--square" value="{{ (isset($data['results']->longitude) ? $data['results']->longitude : '') }}">
+                        </div>
+
+                        <div >
+                            <div class="form-group m-form__group">
+                                <div id="map" style="height: 300px; margin-top: 10px;"></div>
+                            </div>
                         </div>
                     </div>
+                    
+                    
+                    
                     
 
                     <div class="col-md-3">
@@ -162,6 +184,103 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize the map
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 0, lng: 0},
+            zoom: 2
+        });
+
+        let marker; // Declare marker variable globally
+
+        // Initialize the Places Autocomplete service
+        const autocomplete = new google.maps.places.Autocomplete(document.getElementById('address'));
+        autocomplete.bindTo('bounds', map);
+
+        // Listen for the 'place_changed' event when a user selects an address from the dropdown
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                console.error('Invalid address selected.');
+                return;
+            }
+
+            // Clear existing marker if it exists
+            if (marker) {
+                marker.setMap(null);
+            }
+
+            // Update the map and hidden input fields with the selected location
+            map.setCenter(place.geometry.location);
+            map.setZoom(15);
+            document.getElementById('latitude').value = place.geometry.location.lat();
+            document.getElementById('longitude').value = place.geometry.location.lng();
+
+            // Create a new marker at the selected location
+            marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map: map,
+                title: 'Selected Location',
+                draggable: true // Allow marker to be draggable
+            });
+
+            // Update input fields with marker's position when marker is dragged
+            marker.addListener('dragend', function() {
+                document.getElementById('latitude').value = marker.getPosition().lat();
+                document.getElementById('longitude').value = marker.getPosition().lng();
+            });
+        });
+
+        // Function to initialize the map with a given latitude and longitude
+        function initMap(latitude, longitude) {
+            // Create a map centered at the specified location
+            const shopMap = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: latitude, lng: longitude },
+                zoom: 15
+            });
+
+            // Add a marker at the specified location
+            marker = new google.maps.Marker({
+                position: { lat: latitude, lng: longitude },
+                map: shopMap,
+                title: 'Shop Location',
+                draggable: true // Allow marker to be draggable
+            });
+
+            // Update input fields with marker's position when marker is dragged
+            marker.addListener('dragend', function() {
+                document.getElementById('latitude').value = marker.getPosition().lat();
+                document.getElementById('longitude').value = marker.getPosition().lng();
+            });
+        }
+
+        // Retrieve latitude and longitude values from PHP and call initMap
+        <?php
+        if(isset($data['results'])) {
+            $latitude = $data['results']->latitude;
+            $longitude = $data['results']->longitude;
+            echo "initMap($latitude, $longitude);";
+        }
+        ?>
+
+        // Listen for the form submission
+        document.getElementById('registrationForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Collect and process the registration data
+            const formData = new FormData(this);
+            formData.forEach(function (value, key) {
+                console.log(key, value);
+            });
+
+            // Here, you can send the registration data to your server using AJAX or any other method.
+        });
+    });
+</script>
+
+
+
 </body>
 </html>
 </x-app-layout>

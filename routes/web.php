@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('businesses', BusinessController::class);
     Route::resource('roles', RoleController::class);
 
+    Route::get('roles_map', [BusinessController::class, 'show'])->name('roles.map');
+
     Route::get('/delete_businesses/{business}', [BusinessController::class, 'destroy'])->name('delete');
     Route::get('/delete_roles/{role}', [RoleController::class, 'destroy'])->name('deleterole');
     

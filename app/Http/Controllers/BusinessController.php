@@ -59,9 +59,12 @@ class BusinessController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show()
     {
-        //
+        // $data['results'] = Business::where('status', 'Accepted')->get();
+
+        $data['results'] = Business::where('status', 'Accepted')->select('business_name', 'latitude', 'longitude')->get();
+        return view('roles.map', compact('data'));
     }
 
     /**
@@ -99,7 +102,7 @@ class BusinessController extends Controller
      */
     public function destroy(Business $business)
     {
-        $business->delete();
+        
 
         // Redirect or return a response as needed
         return redirect()->route('businesses.index')->with('success', 'Business deleted successfully.');
